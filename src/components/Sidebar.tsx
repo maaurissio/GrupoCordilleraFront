@@ -9,6 +9,12 @@ const navItems = [
   { label: 'Reportes', icon: 'report', path: '/dashboard/reportes' },
 ]
 
+const roleNavVisibility: Record<string, string[]> = {
+  ADMIN: navItems.map((item) => item.path),
+  SOPORTE: ['/dashboard', '/dashboard/usuarios', '/dashboard/sucursales'],
+  GERENTE: ['/dashboard', '/dashboard/sucursales', '/dashboard/reportes'],
+}
+
 function icon(name: string) {
   const props = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '1.85' }
   if (name === 'grid') return <svg {...props}><path d="M4 4h7v7H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 13h7v7H4z" /></svg>
@@ -30,6 +36,8 @@ export function Sidebar({
 }) {
   const navigate = useNavigate()
   const location = useLocation()
+  const visiblePaths = roleNavVisibility[roleLabel] ?? roleNavVisibility.ADMIN
+  const visibleItems = navItems.filter((item) => visiblePaths.includes(item.path))
 
   const isActive = (path: string) => {
     if (path === '/dashboard') return location.pathname === '/dashboard'
@@ -47,7 +55,7 @@ export function Sidebar({
       </div>
 
       <nav className="sidebar-nav">
-        {navItems.map((item) => (
+        {visibleItems.map((item) => (
           <button
             key={item.label}
             type="button"
@@ -66,7 +74,7 @@ export function Sidebar({
           <strong>{nombre}</strong>
           <span>{roleLabel}</span>
         </div>
-        <Button variant="secondary" onPress={onLogout} className="sidebar-exit-button">
+        <Button variant="secondary" onPress={onLogout} className="btn-secondary-minimal sidebar-exit-button">
           Cerrar sesion
         </Button>
       </div>

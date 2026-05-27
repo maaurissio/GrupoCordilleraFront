@@ -4,11 +4,17 @@ export type Sucursal = {
   id: string
   nombre: string
   direccion: string
+  ciudadId: string | null
+  ciudad: string | null
+  regionId: string | null
+  region: string | null
 }
 
 export type SucursalPayload = {
   nombre: string
   direccion: string
+  ciudadId: string
+  usuarioIds: string[]
 }
 
 export async function getAllSucursales(): Promise<Sucursal[]> {

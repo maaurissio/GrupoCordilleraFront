@@ -1,19 +1,5 @@
-import { useState, type FormEvent } from 'react'
-import { Button, Card, Chip, Form, Input, Label, TextField } from '@heroui/react'
-import type { UserProfile, RegisterPayload } from '../apis/users'
-
-type AdminUserFormState = {
-  rut: string
-  dv: string
-  nombre: string
-  apellido: string
-  email: string
-  password: string
-}
-
-const initialForm: AdminUserFormState = {
-  rut: '', dv: '', nombre: '', apellido: '', email: '', password: '',
-}
+import { Card } from '@heroui/react'
+import type { UserProfile } from '../apis/users'
 
 const summaryCards = [
   { value: '43', label: 'Gestiones cerradas' },
@@ -48,42 +34,11 @@ function buildLinePath(points: number[]) {
 
 export function DashboardPage({
   user,
-  onCreateUser,
 }: {
   user: UserProfile
-  onCreateUser: (payload: RegisterPayload) => Promise<void>
 }) {
-  const [form, setForm] = useState<AdminUserFormState>(initialForm)
-  const [submitting, setSubmitting] = useState(false)
-  const [formError, setFormError] = useState('')
-  const [formSuccess, setFormSuccess] = useState('')
-
-  const isAdmin = user.roles.includes('ADMIN')
   const roleLabel = user.roles[0] ?? 'ADMIN'
   const linePath = buildLinePath(progressCurve)
-
-  async function handleCreateUser(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setSubmitting(true)
-    setFormError('')
-    setFormSuccess('')
-    try {
-      await onCreateUser({
-        rut: form.rut, dv: form.dv, nombre: form.nombre,
-        apellido: form.apellido, email: form.email, password: form.password,
-      })
-      setFormSuccess(`Usuario ${form.nombre} ${form.apellido} creado correctamente.`)
-      setForm(initialForm)
-    } catch (err) {
-      const status = (err as { status?: number }).status
-      if (status === 409) setFormError('El rut o el correo ya existen en la plataforma.')
-      else if (status === 400) setFormError('Los datos enviados no cumplen con la validacion requerida.')
-      else if (status === 502) setFormError('No fue posible completar la integracion con los servicios internos.')
-      else setFormError('Ocurrio un error inesperado al crear el usuario.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
 
   return (
     <section className="dashboard-content">
@@ -180,62 +135,6 @@ export function DashboardPage({
         </Card.Content>
       </Card>
 
-      <Card className="admin-card glass-panel wide-card">
-        <Card.Header className="card-padding compact-card-header">
-          <div className="admin-headline-row">
-            <div>
-              <p className="section-kicker">Control de usuarios</p>
-              <h3>Crear nuevo usuario</h3>
-            </div>
-            <Chip size="sm" variant="soft" color={isAdmin ? 'success' : 'default'}>
-              {isAdmin ? 'Permiso ADMIN habilitado' : 'Acceso restringido'}
-            </Chip>
-          </div>
-        </Card.Header>
-        <Card.Content className="card-padding">
-          {isAdmin ? (
-            <Form className="admin-user-form" onSubmit={handleCreateUser}>
-              <div className="admin-form-grid">
-                <TextField>
-                  <Label>RUT</Label>
-                  <Input value={form.rut} onChange={(e) => setForm((c) => ({ ...c, rut: e.target.value }))} required />
-                </TextField>
-                <TextField>
-                  <Label>DV</Label>
-                  <Input value={form.dv} onChange={(e) => setForm((c) => ({ ...c, dv: e.target.value }))} required />
-                </TextField>
-                <TextField>
-                  <Label>Nombre</Label>
-                  <Input value={form.nombre} onChange={(e) => setForm((c) => ({ ...c, nombre: e.target.value }))} required />
-                </TextField>
-                <TextField>
-                  <Label>Apellido</Label>
-                  <Input value={form.apellido} onChange={(e) => setForm((c) => ({ ...c, apellido: e.target.value }))} required />
-                </TextField>
-                <TextField>
-                  <Label>Correo</Label>
-                  <Input type="email" value={form.email} onChange={(e) => setForm((c) => ({ ...c, email: e.target.value }))} required />
-                </TextField>
-                <TextField>
-                  <Label>Contrasena inicial</Label>
-                  <Input type="password" value={form.password} onChange={(e) => setForm((c) => ({ ...c, password: e.target.value }))} required />
-                </TextField>
-              </div>
-              {formError ? <p className="form-error">{formError}</p> : null}
-              {formSuccess ? <p className="form-success">{formSuccess}</p> : null}
-              <div className="form-actions-row">
-                <Button type="submit" variant="primary" isDisabled={submitting} className="submit-button admin-submit-button">
-                  {submitting ? 'Creando usuario...' : 'Crear usuario'}
-                </Button>
-              </div>
-            </Form>
-          ) : (
-            <div className="restricted-box">
-              <p>Solo los usuarios con rol ADMIN pueden crear nuevas cuentas desde este panel.</p>
-            </div>
-          )}
-        </Card.Content>
-      </Card>
     </section>
   )
 }

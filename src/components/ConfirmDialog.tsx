@@ -21,11 +21,11 @@ export function ConfirmDialog({
 
   return (
     <div className="modal-overlay" onClick={onCancel}>
-      <div className="modal-content glass-panel" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content glass-panel" data-lenis-prevent onClick={(e) => e.stopPropagation()}>
         <h3 className="modal-title">{title}</h3>
         <p className="modal-message">{message}</p>
         <div className="modal-actions">
-          <Button variant="secondary" onPress={onCancel} isDisabled={loading}>
+          <Button variant="secondary" className="btn-secondary-minimal" onPress={onCancel} isDisabled={loading}>
             Cancelar
           </Button>
           <Button

@@ -23,6 +23,7 @@ export type RegisterPayload = {
   telefono?: string
   fechaNacimiento?: string
   password: string
+  sucursalIds: string[]
 }
 
 export type UpdateUserPayload = {
@@ -31,12 +32,14 @@ export type UpdateUserPayload = {
   email?: string
   telefono?: string
   fechaNacimiento?: string
+  sucursalIds?: string[]
 }
 
 export async function registerUser(payload: RegisterPayload): Promise<UserProfile> {
   return bffRequest<UserProfile>('/bff/usuarios/register', {
     method: 'POST',
     body: payload,
+    auth: true,
   })
 }
 

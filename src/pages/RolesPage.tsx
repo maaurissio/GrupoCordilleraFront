@@ -5,8 +5,9 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import type { Role } from '../apis/roles'
 
 const ROLE_NAMES = [
-  'ADMIN', 'CLIENTE', 'VENDEDOR', 'SOPORTE', 'GERENTE',
-  'LOGISTICA', 'RRHH', 'CONTABILIDAD', 'OPERADOR', 'SUPERVISOR',
+  'ADMIN',
+  'SOPORTE',
+  'GERENTE',
 ]
 
 export function RolesPage() {
@@ -88,7 +89,7 @@ export function RolesPage() {
 
       {(showCreate || editTarget) && (
         <div className="modal-overlay" onClick={closeForm}>
-          <div className="modal-content glass-panel" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content glass-panel" data-lenis-prevent onClick={(e) => e.stopPropagation()}>
             <h3 className="modal-title">{editTarget ? 'Editar rol' : 'Crear rol'}</h3>
             <Form className="role-form" onSubmit={handleSubmit}>
               <TextField>
@@ -112,7 +113,7 @@ export function RolesPage() {
               </TextField>
               {formError ? <p className="form-error">{formError}</p> : null}
               <div className="modal-actions">
-                <Button variant="secondary" onPress={closeForm} isDisabled={saving}>Cancelar</Button>
+                <Button variant="secondary" className="btn-secondary-minimal" onPress={closeForm} isDisabled={saving}>Cancelar</Button>
                 <Button type="submit" variant="primary" isDisabled={saving}>
                   {saving ? 'Guardando...' : editTarget ? 'Guardar cambios' : 'Crear rol'}
                 </Button>
@@ -138,7 +139,7 @@ export function RolesPage() {
             ) : (
               roles.map((r) => (
                 <tr key={r.id}>
-                  <td><Chip size="sm" variant="soft" color="primary">{r.nombre}</Chip></td>
+                  <td><Chip size="sm" variant="soft" color="default">{r.nombre}</Chip></td>
                   <td>{r.descripcion || '—'}</td>
                   <td><Chip size="sm" variant="soft" color="success">Activo</Chip></td>
                   <td>

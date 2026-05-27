@@ -8,11 +8,6 @@ type LoginFormState = {
   password: string
 }
 
-const operationalNotes = [
-  { title: 'Mesa de control', text: 'Centraliza la creacion de usuarios, roles y seguimiento operativo desde una sola vista.' },
-  { title: 'Flujo protegido', text: 'El acceso al ecosistema se realiza por BFF para mantener trazabilidad y consistencia.' },
-]
-
 export function AuthPage({
   login,
 }: {
@@ -48,41 +43,35 @@ export function AuthPage({
           <p className="brand-kicker">Grupo Cordillera</p>
           <h1>Centro de coordinacion administrativa</h1>
           <p className="auth-copy">
-            Plataforma de acceso interno para supervisar usuarios, coordinar sucursales y gestionar la operacion diaria de la compania.
+            Ingrese a la plataforma de monitoreo inteligente para el desempeño organizacional, acceda a información consolidada y visualice los indicadores clave del negocio en tiempo real.
           </p>
-          <div className="auth-notes">
-            {operationalNotes.map((note) => (
-              <article key={note.title} className="auth-note-card">
-                <h3>{note.title}</h3>
-                <p>{note.text}</p>
-              </article>
-            ))}
-          </div>
         </div>
 
         <Card className="login-panel glass-panel">
           <Card.Header className="login-panel-header">
             <div>
-              <p className="section-kicker">Acceso corporativo</p>
-              <h2>Iniciar sesion</h2>
-              <p className="panel-copy">Ingresa con tu cuenta autorizada para acceder al entorno de trabajo de Grupo Cordillera.</p>
+              <p className="section-kicker">Acceso dashboard</p>
+              <h2>Iniciar sesión</h2>
+              <p className="panel-copy">Ingresa tu cuenta para acceder al dashboard de Grupo Cordillera</p>
             </div>
           </Card.Header>
           <Card.Content className="login-panel-body">
-            <Form className="login-form" onSubmit={handleSubmit}>
-              <TextField>
-                <Label>Correo corporativo</Label>
-                <Input type="email" value={form.email} onChange={(event) => setForm((c) => ({ ...c, email: event.target.value }))} required />
-              </TextField>
-              <TextField>
-                <Label>Contrasena</Label>
-                <Input type="password" value={form.password} onChange={(event) => setForm((c) => ({ ...c, password: event.target.value }))} required />
-              </TextField>
-              {error ? <p className="form-error">{error}</p> : null}
-              <Button type="submit" variant="primary" isDisabled={loading} className="submit-button">
-                {loading ? 'Validando acceso...' : 'Entrar al panel'}
-              </Button>
-            </Form>
+            <div className="login-form-shell">
+              <Form className="login-form" onSubmit={handleSubmit}>
+                <TextField className="login-field">
+                  <Label>Correo</Label>
+                  <Input type="email" value={form.email} onChange={(event) => setForm((c) => ({ ...c, email: event.target.value }))} required />
+                </TextField>
+                <TextField className="login-field">
+                  <Label>Contraseña</Label>
+                  <Input type="password" value={form.password} onChange={(event) => setForm((c) => ({ ...c, password: event.target.value }))} required />
+                </TextField>
+                {error ? <p className="form-error">{error}</p> : null}
+                <Button type="submit" variant="primary" isDisabled={loading} className="submit-button login-submit-button">
+                  {loading ? 'Validando acceso...' : 'Entrar al panel'}
+                </Button>
+              </Form>
+            </div>
           </Card.Content>
         </Card>
       </section>

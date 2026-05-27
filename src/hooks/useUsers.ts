@@ -10,6 +10,10 @@ import {
   type UpdateUserPayload,
 } from '../apis/users'
 
+function normalizeStatus(status?: string) {
+  return (status ?? '').trim().toUpperCase()
+}
+
 export function useUsers() {
   const [users, setUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(false)
@@ -43,7 +47,7 @@ export function useUsers() {
   }, [])
 
   const toggleUserStatus = useCallback(async (id: string, currentStatus: string) => {
-    const updated = currentStatus === 'ACTIVO' ? await deactivateUser(id) : await activateUser(id)
+    const updated = normalizeStatus(currentStatus) === 'ACTIVO' ? await deactivateUser(id) : await activateUser(id)
     setUsers((prev) => prev.map((u) => (u.id === id ? updated : u)))
     return updated
   }, [])

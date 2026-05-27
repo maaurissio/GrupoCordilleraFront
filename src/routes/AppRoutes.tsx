@@ -8,8 +8,40 @@ import { UsersPage } from '../pages/UsersPage'
 import { RolesPage } from '../pages/RolesPage'
 import { SucursalesPage } from '../pages/SucursalesPage'
 import { ReportesPage } from '../pages/ReportesPage'
-import type { UserProfile, RegisterPayload } from '../apis/users'
+import type { UserProfile } from '../apis/users'
 import type { ReactElement } from 'react'
+
+const roleRouteAccess: Record<string, string[]> = {
+  ADMIN: ['/dashboard', '/dashboard/usuarios', '/dashboard/roles', '/dashboard/sucursales', '/dashboard/reportes'],
+  SOPORTE: ['/dashboard', '/dashboard/usuarios', '/dashboard/sucursales'],
+  GERENTE: ['/dashboard', '/dashboard/sucursales', '/dashboard/reportes'],
+}
+
+function getPrimaryRole(profile: UserProfile | null) {
+  return profile?.roles[0] ?? 'ADMIN'
+}
+
+function canAccessRoute(role: string, path: string) {
+  return (roleRouteAccess[role] ?? roleRouteAccess.ADMIN).includes(path)
+}
+
+function RoleProtectedRoute({
+  profile,
+  path,
+  children,
+}: {
+  profile: UserProfile | null
+  path: string
+  children: ReactElement
+}) {
+  const role = getPrimaryRole(profile)
+
+  return (
+    <ProtectedRoute isAuthenticated={Boolean(profile)}>
+      {canAccessRoute(role, path) ? children : <Navigate to="/dashboard" replace />}
+    </ProtectedRoute>
+  )
+}
 
 function DashboardLayout({
   user,
@@ -20,7 +52,7 @@ function DashboardLayout({
   children: ReactElement
   onLogout: () => void
 }) {
-  const roleLabel = user.roles[0] ?? user.roles[0] ?? 'ADMIN'
+  const roleLabel = getPrimaryRole(user)
 
   return (
     <main className="dashboard-shell">
@@ -39,12 +71,10 @@ export function AppRoutes({
   profile,
   login,
   logout,
-  onCreateUser,
 }: {
   profile: UserProfile | null
   login: (email: string, password: string) => Promise<UserProfile>
   logout: () => Promise<void>
-  onCreateUser: (payload: RegisterPayload) => Promise<void>
 }) {
   return (
     <Routes>
@@ -55,54 +85,51 @@ export function AppRoutes({
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute isAuthenticated={Boolean(profile)}>
+          <RoleProtectedRoute profile={profile} path="/dashboard">
             <DashboardLayout user={profile as UserProfile} onLogout={logout}>
-              <DashboardPage
-                user={profile as UserProfile}
-                onCreateUser={onCreateUser}
-              />
+              <DashboardPage user={profile as UserProfile} />
             </DashboardLayout>
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
       <Route
         path="/dashboard/usuarios"
         element={
-          <ProtectedRoute isAuthenticated={Boolean(profile)}>
+          <RoleProtectedRoute profile={profile} path="/dashboard/usuarios">
             <DashboardLayout user={profile as UserProfile} onLogout={logout}>
-              <UsersPage currentUserId={profile?.id} />
+              <UsersPage currentUserId={profile?.id} userRole={getPrimaryRole(profile)} />
             </DashboardLayout>
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
       <Route
         path="/dashboard/roles"
         element={
-          <ProtectedRoute isAuthenticated={Boolean(profile)}>
+          <RoleProtectedRoute profile={profile} path="/dashboard/roles">
             <DashboardLayout user={profile as UserProfile} onLogout={logout}>
               <RolesPage />
             </DashboardLayout>
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
       <Route
         path="/dashboard/sucursales"
         element={
-          <ProtectedRoute isAuthenticated={Boolean(profile)}>
+          <RoleProtectedRoute profile={profile} path="/dashboard/sucursales">
             <DashboardLayout user={profile as UserProfile} onLogout={logout}>
-              <SucursalesPage />
+              <SucursalesPage userRole={getPrimaryRole(profile)} />
             </DashboardLayout>
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
       <Route
         path="/dashboard/reportes"
         element={
-          <ProtectedRoute isAuthenticated={Boolean(profile)}>
+          <RoleProtectedRoute profile={profile} path="/dashboard/reportes">
             <DashboardLayout user={profile as UserProfile} onLogout={logout}>
               <ReportesPage />
             </DashboardLayout>
-          </ProtectedRoute>
+          </RoleProtectedRoute>
         }
       />
       <Route

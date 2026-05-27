@@ -49,7 +49,7 @@ export function ReportesPage() {
 
       <div className="report-grid">
         <Card className="report-card glass-panel">
-          <Card.Content>
+          <Card.Content className="card-padding report-card-content">
             <p className="section-kicker">Usuarios</p>
             <div className="report-metric">
               <span className="report-value">{activeUsers}</span>
@@ -67,7 +67,7 @@ export function ReportesPage() {
         </Card>
 
         <Card className="report-card glass-panel">
-          <Card.Content>
+          <Card.Content className="card-padding report-card-content">
             <p className="section-kicker">Roles</p>
             <div className="report-metric">
               <span className="report-value">{roles.length}</span>
@@ -85,7 +85,7 @@ export function ReportesPage() {
         </Card>
 
         <Card className="report-card glass-panel">
-          <Card.Content>
+          <Card.Content className="card-padding report-card-content">
             <p className="section-kicker">Sucursales</p>
             <div className="report-metric">
               <span className="report-value">{sucursales.length}</span>
